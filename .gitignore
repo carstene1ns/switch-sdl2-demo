@@ -1,0 +1,11 @@
+
+# switch
+*.elf
+*.nacp
+*.nro
+*.nso
+*.pfs0
+/build/
+
+# linux
+sdl_demo
