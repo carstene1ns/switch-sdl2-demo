@@ -58,14 +58,14 @@ int main(int argc, char** argv) {
     int vel_x = rand_range(1, 5);
     int vel_y = rand_range(1, 5);
 
-    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER);
     Mix_Init(MIX_INIT_OGG);
     IMG_Init(IMG_INIT_PNG);
 
 #ifdef __SWITCH__
-    consoleInit(NULL);
-    printf("init...\n");
-    // to speed up ryujinx:
+    //consoleInit(NULL);
+    //printf("init...\n");
+    // to speed up running in ryujinx/yuzu:
     //wait = 0;
 #endif
 
@@ -94,12 +94,14 @@ int main(int argc, char** argv) {
     col = rand_range(0, 7);
 
 #ifdef __SWITCH__
+    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     SDL_JoystickEventState(SDL_ENABLE);
     SDL_JoystickOpen(0);
 #endif
 
-    Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 4096);
+    SDL_InitSubSystem(SDL_INIT_AUDIO);
     Mix_AllocateChannels(5);
+    Mix_OpenAudio(48000, AUDIO_S16, 2, 4096);
 
     // load music and sounds from files
     music = Mix_LoadMUS("data/background.ogg");
@@ -110,7 +112,11 @@ int main(int argc, char** argv) {
     if (music)
         Mix_PlayMusic(music, -1);
 
-    while (!exit_requested) {
+    while (!exit_requested
+#ifdef __SWITCH__
+        && appletMainLoop()
+#endif
+        ) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 exit_requested = 1;
