@@ -32,7 +32,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	src
-DATA		:=	data
+DATA		:=	dat
 INCLUDES	:=	include
 EXEFS_SRC	:=	exefs_src
 
@@ -42,7 +42,7 @@ APP_AUTHOR  := carstene1ns
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
+ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -ftls-model=local-exec
 
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 			$(ARCH) $(DEFINES)
@@ -178,18 +178,6 @@ $(OUTPUT).elf	:	$(OFILES)
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------
 %.bin.o	:	%.bin
-	@echo $(notdir $<)
-	@$(bin2o)
-
-%.wav.o	:	%.wav
-	@echo $(notdir $<)
-	@$(bin2o)
-
-%.ogg.o	:	%.ogg
-	@echo $(notdir $<)
-	@$(bin2o)
-
-%.png.o	:	%.png
 	@echo $(notdir $<)
 	@$(bin2o)
 
