@@ -27,7 +27,7 @@ Use `nx-hbmenu`.
 
 ### Linux:
 
-    ./sdl_demo
+    ./sdl2_demo
 
 
 ## Controls
