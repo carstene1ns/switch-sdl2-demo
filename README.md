@@ -54,4 +54,7 @@ Use `nx-hbmenu`.
 
 ## License
 
-(c) 2018 carstene1ns, provided under ISC license, see [LICENSE.md](LICENSE.md) for details.
+(c) 2018-2021 carstene1ns, provided under ISC license, see
+[LICENSE.md](LICENSE.md) for details.
+
+The included font has been put in the public domain.

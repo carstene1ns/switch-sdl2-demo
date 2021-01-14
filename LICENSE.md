@@ -1,4 +1,4 @@
-Copyright 2018 carstene1ns
+Copyright 2018-2021 carstene1ns
 
 Permission to use, copy, modify, and/or distribute this software for any 
 purpose with or without fee is hereby granted, provided that the above 
