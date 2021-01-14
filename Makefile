@@ -44,9 +44,10 @@ DATA		:=	data
 INCLUDES	:=	include
 ROMFS		:=	romfs
 
-APP_TITLE   := SDL2+mixer+image Demo
-APP_AUTHOR  := carstene1ns
-PC_LIBS     := SDL2_image SDL2_mixer sdl2
+APP_TITLE   := SDL2+mixer+image+ttf Demo
+APP_AUTHOR  := carstene1ns et al.
+APP_VERSION := 2.0
+PC_LIBS     := SDL2_image SDL2_mixer SDL2_ttf sdl2
 
 #---------------------------------------------------------------------------------
 # options for code generation

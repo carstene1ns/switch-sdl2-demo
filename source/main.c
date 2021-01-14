@@ -1,5 +1,5 @@
 /* Mini SDL Demo
- * featuring SDL2 + SDL2_mixer + SDL2_image
+ * featuring SDL2 + SDL2_mixer + SDL2_image + SDL2_ttf
  * on Nintendo Switch using libnx
  *
  * (c) 2018-2021 carstene1ns, ISC license
@@ -10,6 +10,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #ifdef __SWITCH__
 #include <switch.h>
 #endif
@@ -28,7 +29,21 @@
 #define SCREEN_W 1280
 #define SCREEN_H 720
 
-int rand_range(int min, int max){
+SDL_Texture *render_text(SDL_Renderer *renderer, const char *text, TTF_Font *font, SDL_Color color, SDL_Rect *rect) {
+    SDL_Surface *surface;
+    SDL_Texture *texture;
+
+    surface = TTF_RenderText_Solid(font, text, color);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    rect->w = surface->w;
+    rect->h = surface->h;
+
+    SDL_FreeSurface(surface);
+
+    return texture;
+}
+
+int rand_range(int min, int max) {
    return min + rand() / (RAND_MAX / (max - min + 1) + 1);
 }
 
@@ -46,7 +61,7 @@ int main(int argc, char** argv) {
     int trail = 0;
     int wait = 25;
 
-    SDL_Texture *switchlogo_tex = NULL, *sdllogo_tex =  NULL;
+    SDL_Texture *switchlogo_tex = NULL, *sdllogo_tex = NULL, *helloworld_tex = NULL;
     SDL_Rect pos = { 0, 0, 0, 0 }, sdl_pos = { 0, 0, 0, 0 };
     Mix_Music *music = NULL;
     Mix_Chunk *sound[4] = { NULL };
@@ -71,8 +86,9 @@ int main(int argc, char** argv) {
     SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER);
     Mix_Init(MIX_INIT_OGG);
     IMG_Init(IMG_INIT_PNG);
+    TTF_Init();
 
-    SDL_Window* window = SDL_CreateWindow("sdl2+mixer+image demo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_W, SCREEN_H, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("sdl2+mixer+image+ttf demo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_W, SCREEN_H, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
     // load logos from file
@@ -114,6 +130,16 @@ int main(int argc, char** argv) {
     sound[3] = Mix_LoadWAV("data/pop4.wav");
     if (music)
         Mix_PlayMusic(music, -1);
+
+    // load font
+    TTF_Font* font = TTF_OpenFont("data/LeroyLetteringLightBeta01.ttf", 36);
+
+    // render text as texture
+    SDL_Rect helloworld_rect = { 0, SCREEN_H - 36, 0, 0 };
+    helloworld_tex = render_text(renderer, "Hello, world!", font, colors[1], &helloworld_rect);
+
+    // no need to keep the font loaded
+    TTF_CloseFont(font);
 
     while (!exit_requested
 #ifdef __SWITCH__
@@ -208,6 +234,10 @@ int main(int argc, char** argv) {
             SDL_RenderCopy(renderer, switchlogo_tex, NULL, &pos);
         }
 
+        // put text on screen
+        if (helloworld_tex)
+            SDL_RenderCopy(renderer, helloworld_tex, NULL, &helloworld_rect);
+
         SDL_RenderPresent(renderer);
 
         SDL_Delay(wait);
@@ -220,6 +250,9 @@ int main(int argc, char** argv) {
     if (switchlogo_tex)
         SDL_DestroyTexture(switchlogo_tex);
 
+    if (helloworld_tex)
+        SDL_DestroyTexture(helloworld_tex);
+
     // stop sounds and free loaded data
     Mix_HaltChannel(-1);
     Mix_FreeMusic(music);
@@ -229,6 +262,7 @@ int main(int argc, char** argv) {
 
     IMG_Quit();
     Mix_CloseAudio();
+    TTF_Quit();
     Mix_Quit();
     SDL_Quit();
 
