@@ -2,13 +2,14 @@
  * featuring SDL2 + SDL2_mixer + SDL2_image
  * on Nintendo Switch using libnx
  *
- * (c) 2018 carstene1ns, ISC license
+ * (c) 2018-2021 carstene1ns, ISC license
  */
 
 #include <time.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_image.h>
+#include <unistd.h>
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include <SDL_image.h>
 #ifdef __SWITCH__
 #include <switch.h>
 #endif
@@ -18,7 +19,7 @@
 #define JOY_B     1
 #define JOY_X     2
 #define JOY_Y     3
-#define JOY_MINUS 11
+#define JOY_PLUS  10
 #define JOY_LEFT  12
 #define JOY_UP    13
 #define JOY_RIGHT 14
@@ -32,6 +33,15 @@ int rand_range(int min, int max){
 }
 
 int main(int argc, char** argv) {
+
+    // find our data files
+#ifdef __SWITCH__
+    romfsInit();
+    chdir("romfs:/");
+#else
+    chdir("romfs");
+#endif
+
     int exit_requested = 0;
     int trail = 0;
     int wait = 25;
@@ -61,13 +71,6 @@ int main(int argc, char** argv) {
     SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER);
     Mix_Init(MIX_INIT_OGG);
     IMG_Init(IMG_INIT_PNG);
-
-#ifdef __SWITCH__
-    //consoleInit(NULL);
-    //printf("init...\n");
-    // to speed up running in ryujinx/yuzu:
-    //wait = 0;
-#endif
 
     SDL_Window* window = SDL_CreateWindow("sdl2+mixer+image demo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_W, SCREEN_H, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
@@ -131,7 +134,7 @@ int main(int argc, char** argv) {
                     if (wait < 100)
                         wait++;
 
-                if (event.jbutton.button == JOY_MINUS)
+                if (event.jbutton.button == JOY_PLUS)
                     exit_requested = 1;
 
                 if (event.jbutton.button == JOY_B)
@@ -210,6 +213,13 @@ int main(int argc, char** argv) {
         SDL_Delay(wait);
     }
 
+    // clean up your textures when you are done with them
+    if (sdllogo_tex)
+        SDL_DestroyTexture(sdllogo_tex);
+
+    if (switchlogo_tex)
+        SDL_DestroyTexture(switchlogo_tex);
+
     // stop sounds and free loaded data
     Mix_HaltChannel(-1);
     Mix_FreeMusic(music);
@@ -221,6 +231,10 @@ int main(int argc, char** argv) {
     Mix_CloseAudio();
     Mix_Quit();
     SDL_Quit();
+
+#ifdef __SWITCH__
+    romfsExit();
+#endif
 
     return 0;
 }

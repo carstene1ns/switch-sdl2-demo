@@ -39,10 +39,10 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	src
-DATA		:=	dat
+SOURCES		:=	source
+DATA		:=	data
 INCLUDES	:=	include
-#ROMFS		:=	romfs
+ROMFS		:=	romfs
 
 APP_TITLE   := SDL2+mixer+image Demo
 APP_AUTHOR  := carstene1ns
